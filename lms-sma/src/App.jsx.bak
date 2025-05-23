@@ -1,0 +1,25 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './pages/Login'
+import DashboardAdmin from './pages/DashboardAdmin'
+import DashboardGuru from './pages/DashboardGuru'
+import DashboardSiswa from './pages/DashboardSiswa'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/admin" element={<DashboardAdmin />} />
+        <Route path="/guru" element={<DashboardGuru />} />
+        <Route path="/siswa" element={<DashboardSiswa />} />
+        <Route path="/admin" element={<ProtectedRoute roles={['admin']}> <DashboardAdmin/> </ProtectedRoute>}/>
+
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
+
+// File ini adalah backup lama dan tidak perlu diubah jika kamu sudah memakai App.jsx utama yang lebih lengkap dan modern.
+// Jika ingin tetap pakai, sebaiknya hapus route duplikat "/admin" dan gunakan ProtectedRoute serta layout seperti di App.jsx utama.
