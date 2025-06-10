@@ -1,12 +1,12 @@
-// src/App.jsx
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './context/AuthContext'
 
 // Protected layout & auth
 import ProtectedRoute from './components/ProtectedRoute'
 import DefaultLayout  from './layouts/DefaultLayout'
 
-// Auth pages
+// Public pages
 import Login    from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Landing  from './pages/Landing.jsx'
@@ -27,26 +27,20 @@ import DashboardSiswa   from './pages/DashboardSiswa.jsx'
 import SiswaAssignments from './pages/SiswaAssignments.jsx'
 import SiswaGrades      from './pages/SiswaGrades.jsx'
 import SiswaMaterials   from './pages/SiswaMaterials.jsx'
+
+// Shared pages
 import Profile          from './pages/Profile.jsx'
-import ForumList        from './pages/ForumList'
-import ForumDetail      from './pages/ForumDetail'
 import ForumTugasList   from './pages/ForumTugasList'
 import ForumTugasDetail from './pages/ForumTugasDetail'
 
 export default function App() {
-  const currentUser = JSON.parse(localStorage.getItem('lms-user'))
+  const { user } = useAuth();
   
-  if (!currentUser) {
-    return <Navigate to="/login" />
-  }
-
   return (
     <Routes>
-      {/* Landing page */}
-      <Route path="/" element={<Landing />} />
-      {/* Public routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/" element={!user ? <Landing /> : <Navigate to={`/${user.role}`} />} />
+      <Route path="/login" element={!user ? <Login /> : <Navigate to={`/${user.role}`} />} />
+      <Route path="/register" element={!user ? <Register /> : <Navigate to={`/${user.role}`} />} />
 
       {/* Admin */}
       <Route
@@ -98,13 +92,21 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      {/* Forum */}
-      <Route path="/forums" element={<ForumList currentUser={currentUser} />} />
-      <Route path="/forums/:forumId" element={<ForumDetail currentUser={currentUser} />} />
-      <Route path="/forum-tugas" element={<ForumTugasList />} />
+      {/* Forum Tugas - Dapat diakses oleh siswa dan guru */}
+      <Route path="/forum-tugas" element={
+          <ProtectedRoute roles={['guru', 'siswa']}>
+            <DefaultLayout><ForumTugasList /></DefaultLayout>
+          </ProtectedRoute>
+        } 
+      />
       <Route path="/forum-tugas/:forumId" element={
-        <ForumTugasDetail currentUser={currentUser} />
+        <ProtectedRoute roles={['guru', 'siswa']}>
+            <DefaultLayout><ForumTugasDetail /></DefaultLayout>
+        </ProtectedRoute>
       } />
+
+      {/* Rute fallback untuk pengguna yang sudah login tetapi mencoba mengakses halaman publik */}
+      <Route path="*" element={user ? <Navigate to={`/${user.role}`} /> : <Navigate to="/login" />} />
     </Routes>
   )
 }

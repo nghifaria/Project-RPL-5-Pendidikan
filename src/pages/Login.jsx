@@ -31,16 +31,25 @@ export default function Login() {
       return
     }
 
+    // FIX: Simpan user ke localStorage SEBELUM memanggil fungsi login dari context.
+    try {
+      localStorage.setItem('lms-user', JSON.stringify(data));
+    } catch (storageError) {
+      setError('Gagal menyimpan sesi. Silakan coba lagi.');
+      console.error("LocalStorage Error:", storageError);
+      return;
+    }
+
     // simpan user ke Context
     login(data)
 
     // redirect sesuai role
     if (data.role === 'admin') {
-      navigate('/admin/subjects', { replace: true })
+      navigate('/admin', { replace: true })
     } else if (data.role === 'guru') {
-      navigate('/guru/materials', { replace: true })
+      navigate('/guru', { replace: true })
     } else if (data.role === 'siswa') {
-      navigate('/siswa/materials', { replace: true })
+      navigate('/siswa', { replace: true })
     } else {
       setError('Role tidak dikenali')
     }

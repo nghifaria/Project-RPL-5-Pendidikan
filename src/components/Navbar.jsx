@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function Navbar() {
+export default function Navbar({ toggleSidebar }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
@@ -28,20 +28,25 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
         {/* Logo & App Name */}
-        <Link
-          to={user?.role ? `/${user.role}` : '/'}
-          className="flex items-center gap-2"
-        >
-          {/* Simple book icon */}
-          <span className="bg-primary rounded-lg p-2">
-            <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
-              <rect width="20" height="20" x="2" y="2" rx="5" fill="#fff"/>
-              <rect width="20" height="20" x="2" y="2" rx="5" stroke="#7c3aed" strokeWidth="2"/>
-              <path d="M7 8h10M7 12h10M7 16h6" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <span className="text-2xl font-bold text-gray-900">EduLearn</span>
-        </Link>
+        <div className="flex items-center gap-2">
+           <button onClick={toggleSidebar} className="p-2 rounded-md hover:bg-gray-100 focus:outline-none">
+             <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+          <Link
+            to={user?.role ? `/${user.role}` : '/'}
+            className="flex items-center gap-2"
+          >
+            {/* Simple book icon */}
+            <span className="bg-primary rounded-lg p-2">
+              <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+                <rect width="20" height="20" x="2" y="2" rx="5" fill="#fff"/>
+                <rect width="20" height="20" x="2" y="2" rx="5" stroke="#7c3aed" strokeWidth="2"/>
+                <path d="M7 8h10M7 12h10M7 16h6" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </span>
+            <span className="text-2xl font-bold text-gray-900">EduLearn</span>
+          </Link>
+        </div>
 
         {/* Right section - Profile Dropdown */}
         <div className="flex items-center gap-4">

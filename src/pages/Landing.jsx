@@ -36,9 +36,10 @@ export default function Landing() {
             </Link>
           </div>
         </div>
+        {/* Gambar diganti menjadi lebih relevan */}
         <img
-          src="https://ccnow.sdsu.edu/wp-content/uploads/sites/34/2022/02/CCNOW-Images-copy-3-850x560.png"
-          alt="Nature"
+          src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80"
+          alt="Students learning"
           className="rounded-xl shadow-lg w-full max-w-md object-cover"
         />
       </main>

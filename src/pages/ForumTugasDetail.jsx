@@ -1,17 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
+import { useAuth } from '../context/AuthContext' // <-- IMPORT HOOK
 
-export default function ForumTugasDetail({ currentUser }) {
+export default function ForumTugasDetail() { // <-- Hapus props currentUser
   const { forumId } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth() // <-- GUNAKAN HOOK untuk mendapatkan user
+  
   const [forum, setForum] = useState(null)
   const [messages, setMessages] = useState([])
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  
+  const messagesEndRef = useRef(null)
 
-  // Ambil user dari localStorage jika currentUser tidak ada
-  const user = currentUser || JSON.parse(localStorage.getItem('lms-user') || '{}')
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages]);
 
   useEffect(() => {
     fetchForum()
@@ -25,98 +35,100 @@ export default function ForumTugasDetail({ currentUser }) {
   }
 
   async function fetchMessages() {
-    const { data } = await supabase
+    setLoading(true);
+    const { data, error } = await supabase
       .from('forum_messages')
-      .select('*, users(name)')
+      .select('*, users(id, name, role)')
       .eq('forum_id', forumId)
       .order('created_at', { ascending: true })
-    setMessages(data || [])
+    
+    if (error) {
+        console.error("Error fetching messages:", error)
+        setMessages([])
+    } else {
+        setMessages(data || [])
+    }
+    setLoading(false);
   }
 
   const sendMessage = async (e) => {
     e.preventDefault()
-    if (!message.trim()) return 
+    if (!message.trim() || !user?.id) return
     
-    try {
-      setLoading(true)
-      const { error } = await supabase.from('forum_messages').insert([{
-        forum_id: forumId,
-        user_id: user.id, 
-        message: message.trim()
-      }])
+    setLoading(true)
+    const { error } = await supabase.from('forum_messages').insert([{
+      forum_id: forumId,
+      user_id: user.id, 
+      message: message.trim()
+    }])
 
-      if (error) throw error
-
-      setMessage('')
-      await fetchMessages() // refresh messages
-      
-    } catch (err) {
-      alert('Gagal kirim pesan: ' + err.message)
-    } finally {
-      setLoading(false)
+    if (error) {
+        alert('Gagal kirim pesan: ' + error.message)
+    } else {
+        setMessage('')
+        await fetchMessages()
     }
+    setLoading(false)
   }
 
   const deleteMessage = async (id) => {
+    if (!confirm('Anda yakin ingin menghapus pesan ini?')) return;
     await supabase.from('forum_messages').delete().eq('id', id)
     setMessages(msgs => msgs.filter(m => m.id !== id))
   }
 
-  if (!forum) return <div>Loading...</div>
+  if (!forum) return <div>Loading forum...</div>
 
   return (
-    <div className="p-6 max-w-3xl mx-auto flex flex-col" style={{ minHeight: '80vh' }}>
+    <div className="p-6 max-w-3xl mx-auto flex flex-col" style={{ height: 'calc(100vh - 120px)' }}>
       <button
-        className="mb-4 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm"
+        className="mb-4 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm self-start"
         onClick={() => navigate(-1)}
       >
         &larr; Kembali
       </button>
       <h1 className="text-2xl font-bold mb-2">{forum.title}</h1>
       <div className="mb-6 text-gray-600">{forum.description}</div>
-      <div className="bg-gray-50 rounded p-4 mb-4 flex-1 max-h-96 overflow-y-auto">
-        {messages.length === 0 && <div className="text-gray-400">Belum ada pesan.</div>}
+      <div className="bg-gray-50 rounded p-4 mb-4 flex-1 overflow-y-auto">
+        {loading && <div className="text-center text-gray-500">Memuat pesan...</div>}
+        {!loading && messages.length === 0 && <div className="text-center text-gray-400">Belum ada pesan.</div>}
         {messages.map(msg => (
-          <div key={msg.id} className="mb-3 flex items-start gap-2">
+          <div key={msg.id} className="mb-3 flex items-start gap-3 p-3 rounded hover:bg-gray-100">
             <div className="flex-1">
-              <div className="font-semibold">{msg.users?.name || 'User'}</div>
-              <div className="text-gray-700">{msg.message}</div>
-              <div className="text-xs text-gray-400">{new Date(msg.created_at).toLocaleString()}</div>
+              <div className="flex items-center justify-between">
+                <p className="font-semibold text-violet-700">{msg.users?.name || 'User Tanpa Nama'}</p>
+                {(user?.id === msg.user_id || user?.role === 'admin') && (
+                  <button
+                    className="text-red-500 hover:text-red-700 text-xs font-semibold"
+                    onClick={() => deleteMessage(msg.id)}
+                  >
+                    Hapus
+                  </button>
+                )}
+              </div>
+              <p className="text-gray-700 whitespace-pre-wrap">{msg.message}</p>
+              <p className="text-xs text-gray-400 mt-1">{new Date(msg.created_at).toLocaleString('id-ID')}</p>
             </div>
-            {user?.id === msg.user_id && (
-              <button
-                className="text-red-500 text-xs ml-2"
-                onClick={() => deleteMessage(msg.id)}
-              >
-                Hapus
-              </button>
-            )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <form
         onSubmit={sendMessage}
         className="flex gap-2 bg-white pt-3"
-        style={{
-          position: 'sticky',
-          bottom: 0,
-          zIndex: 10,
-          borderTop: '1px solid #eee',
-          marginTop: 'auto'
-        }}
       >
         <input
-          className="flex-1 border rounded px-3 py-2"
+          className="flex-1 border rounded px-3 py-2 focus:ring-2 focus:ring-violet-400 focus:outline-none"
           placeholder="Tulis pesan..."
           value={message}
           onChange={e => setMessage(e.target.value)}
           required
         />
         <button
-          className="bg-violet-600 text-white px-4 py-2 rounded"
+          className="btn btn-primary"
           disabled={loading}
         >
-          Kirim
+          {loading ? 'Mengirim...' : 'Kirim'}
         </button>
       </form>
     </div>
