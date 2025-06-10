@@ -63,7 +63,6 @@ export default function AdminSubjects() {
   async function handleDelete(id) {
     if (!window.confirm('Yakin ingin menghapus mapel ini? Semua materi, tugas, dan submissions terkait juga akan hilang!')) return
 
-    // Ambil semua assignments dari subject yang akan dihapus
     const { data: assignments } = await supabase.from('assignments').select('id').eq('subject_id', id)
 
     // Hapus semua submissions untuk assignments itu (jika ada assignments)

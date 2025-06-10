@@ -42,7 +42,7 @@ export default function SiswaAssignments() {
       // **PASTIKAN select ambil file_url di assignments!**
       const { data: assignmentList } = await supabase
         .from('assignments')
-        .select('id, title, due_date, subject_id, file_url') // <-- ini penting!
+        .select('id, title, due_date, subject_id, file_url')
         .eq('subject_id', selectedSubject.id)
         .order('due_date', { ascending: true })
       setAssignments(assignmentList || [])
