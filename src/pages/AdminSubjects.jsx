@@ -9,17 +9,20 @@ export default function AdminSubjects() {
   const [newName, setNewName] = useState('')
   const [newDesc, setNewDesc] = useState('')
   const [status, setStatus] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchSubjects()
   }, [])
 
   async function fetchSubjects() {
+    setLoading(true);
     const { data } = await supabase
       .from('subjects')
       .select('id, name, description')
       .order('name', { ascending: true })
     setSubjects(data || [])
+    setLoading(false);
   }
 
   async function handleAdd(e) {
@@ -65,17 +68,14 @@ export default function AdminSubjects() {
 
     const { data: assignments } = await supabase.from('assignments').select('id').eq('subject_id', id)
 
-    // Hapus semua submissions untuk assignments itu (jika ada assignments)
     if (assignments && assignments.length > 0) {
       const assignmentIds = assignments.map(a => a.id)
       await supabase.from('submissions').delete().in('assignment_id', assignmentIds)
       await supabase.from('assignments').delete().in('id', assignmentIds)
     }
 
-    // Hapus semua materials yang terkait
     await supabase.from('materials').delete().eq('subject_id', id)
 
-    // Hapus subject
     const { error } = await supabase.from('subjects').delete().eq('id', id)
     if (error) setStatus('Gagal hapus: ' + error.message)
     else {
@@ -88,7 +88,6 @@ export default function AdminSubjects() {
   return (
     <div className="max-w-xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        {/* Book icon */}
         <svg className="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" fill="#fff"/><rect width="20" height="20" x="2" y="2" rx="5" stroke="#7c3aed" strokeWidth="2"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round"/></svg>
         Kelola Mata Pelajaran
       </h2>
@@ -117,6 +116,9 @@ export default function AdminSubjects() {
           {status}
         </div>
       )}
+
+      {loading && <p>Loading...</p>}
+      
       <ul className="space-y-4">
         {subjects.map(sub =>
           editingId === sub.id ? (
@@ -149,12 +151,13 @@ export default function AdminSubjects() {
               </form>
             </li>
           ) : (
-            <li key={sub.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow flex justify-between items-center">
-              <div>
+            // FIX: Mengganti 'items-center' menjadi 'items-start' untuk menjaga alignment tombol
+            <li key={sub.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow flex justify-between items-start">
+              <div className="flex-1 pr-4">
                 <div className="font-semibold text-lg">{sub.name}</div>
-                <div className="text-sm text-gray-500">{sub.description}</div>
+                <div className="text-sm text-gray-500 whitespace-pre-wrap">{sub.description}</div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-shrink-0">
                 <button
                   className="btn btn-xs btn-outline flex items-center gap-1"
                   onClick={() => startEdit(sub)}
