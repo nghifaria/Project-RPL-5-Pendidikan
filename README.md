@@ -6,15 +6,15 @@ https://project-rpl-5-pendidikan.vercel.app/
 
 Akun untuk login:
 - Role Admin:
-  admin@gmail.com; pw:
+  admin@gmail.com;
   admin
   
 - Role Guru:
-  guru@gmail.com; pw:
+  guru@gmail.com;
   guru
   
 - Role Siswa:
-  siswa@gmail.com; pw:
+  siswa@gmail.com;
   siswa
 
 ## Deskripsi Proyek
