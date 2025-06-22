@@ -25,13 +25,13 @@ Aplikasi ini adalah sebuah Learning Management System (LMS) berbasis web yang di
 
 Proyek ini dikerjakan oleh **Kelompok 5 P3**:
 
-| Nama                          | NIM         |
-| ----------------------------- | ----------- |
-| Hamzah Hudzaifah              | G6401231011 |
-| Naufal Ghifari Afdhala        | G6401231029 |
-| Muhammad Faqih                | G6401231081 |
-| Muhammad Chalied Al Walid     | G6401231114 |
-| Davina Lydia Alessandra Mamesah | G6401231148 |
+| Nama                          | NIM         | Task                  |
+| ----------------------------- | ----------- | -----------           |
+| Hamzah Hudzaifah              | G6401231011 | Frontend Developer    |
+| Naufal Ghifari Afdhala        | G6401231029 | Full Stack Developer  |
+| Muhammad Faqih                | G6401231081 | Frontend Developer    |
+| Muhammad Chalied Al Walid     | G6401231114 | Frontend Developer    |
+| Davina Lydia Alessandra Mamesah | G6401231148 | Frontend Developer  |
 
 ## Arsitektur Sistem
 
