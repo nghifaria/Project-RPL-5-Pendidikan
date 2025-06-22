@@ -4,6 +4,19 @@ Proyek ini dibuat untuk memenuhi tugas mata kuliah Rekayasa Perangkat Lunak (RPL
 
 https://project-rpl-5-pendidikan.vercel.app/
 
+Akun untuk login:
+- Role Admin:
+  admin@gmail.com
+  admin
+  
+- Role Guru:
+  guru@gmail.com
+  guru
+  
+- Role Siswa
+  siswa@gmail.com
+  siswa
+
 ## Deskripsi Proyek
 
 Aplikasi ini adalah sebuah Learning Management System (LMS) berbasis web yang dirancang untuk SMA Plus YPHB. Tujuannya adalah untuk menggantikan proses pembelajaran yang masih manual (menggunakan WhatsApp dan dokumen cetak) dengan platform digital yang lebih efisien dan terorganisir. Dengan LMS ini, guru dapat mengelola materi dan tugas secara terstruktur, sementara siswa dapat dengan mudah mengakses konten pembelajaran dan mengumpulkan tugas secara daring.
