@@ -26,10 +26,11 @@ export default function Landing() {
           <p className="text-lg text-gray-600 mb-6">
             Platform Learning Management System (LMS) modern untuk SMA.
             Akses materi, tugas, nilai, dan kolaborasi belajar dengan mudah. <br />
-            Untuk demo:
-            email: admin@gmail.com password: admin
-            email: guru@gmail.com password: guru
-            email: siswa@gmail.com password: siswa
+            Untuk demo:<br />
+            email: admin@gmail.com password: admin<br />
+            email: guru@gmail.com password: guru<br />
+            email: siswa@gmail.com password: siswa<br />
+            
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
             <Link to="/login" className="bg-gradient-to-r from-violet-600 to-blue-500 text-white px-8 py-3 rounded-xl text-lg font-semibold shadow hover:from-violet-700 hover:to-blue-600 transition">
